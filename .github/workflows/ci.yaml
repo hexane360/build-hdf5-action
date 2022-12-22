@@ -1,0 +1,21 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - id: run
+        name: Run Action
+        uses: ./  # run this action
+        with:
+          hdf5-dir: /opt/my-hdf5-dir
+      - name: test
+        shell: bash
+        run: HDF5_DIR='${{ steps.run.outputs.hdf5-dir }}' ./test.sh
