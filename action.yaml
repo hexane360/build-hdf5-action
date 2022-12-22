@@ -8,7 +8,7 @@ inputs:
   hdf5-dir:
     required: true
     description: "Directory to install into"
-    default: "/opt/hdf5"
+    default: "${{ github.workspace }}/.local/hdf5"
 outputs:
   hdf5-dir:
     description: "Directory where HDF5 is installed"

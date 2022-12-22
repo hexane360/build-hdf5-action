@@ -1,4 +1,4 @@
-name: Test
+name: CI
 
 on:
   pull_request:
@@ -6,8 +6,16 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  test:
+    name: Test ${{ matrix.os }} - ${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+        arch: [x64]
+        experimental: [false]
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -15,7 +23,7 @@ jobs:
         name: Run Action
         uses: ./  # run this action
         with:
-          hdf5-dir: /opt/my-hdf5-dir
+          hdf5-dir: "${{ github.workspace }}/my-hdf5"
       - name: test
         shell: bash
         run: HDF5_DIR='${{ steps.run.outputs.hdf5-dir }}' ./test.sh

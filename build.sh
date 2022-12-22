@@ -7,13 +7,17 @@ echo "Installing system dependencies..."
 
 if [ "$RUNNER_OS" == "Linux" ]; then
 	sudo apt-get -y update
-	sudo apt-get -y install build-essential cmake
+	sudo apt-get -y install build-essential cmake zlib1g-dev
+elif [ "$RUNNER_OS" == "macOS" ]; then
+	# don't reinstall cmake & zlib on GitHub CI runner
+	if [ -z "$RUNNER_TOOL_CACHE" ]; then
+		HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 brew install cmake zlib
+	fi
 fi
 
 cd "$GITHUB_WORKSPACE/hdf5-build"
 
-mkdir build
-cd build
+mkdir build && cd build
 
 cmake .. -G "Unix Makefiles" \
          -DCMAKE_BUILD_TYPE=Release \
@@ -23,5 +27,5 @@ cmake .. -G "Unix Makefiles" \
          -DCMAKE_INSTALL_PREFIX="$HDF5_DIR"
 
 cmake --build . --config Release
-cmake --build . --target install
+sudo cmake --build . --target install
 
