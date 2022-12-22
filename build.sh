@@ -2,7 +2,6 @@
 set -euo pipefail
 
 echo "HDF5_DIR: $HDF5_DIR"
-echo "hdf5-dir=$HDF5_DIR" >>"$GITHUB_OUTPUT"
 
 echo "Installing system dependencies..."
 

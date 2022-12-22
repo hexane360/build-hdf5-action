@@ -12,17 +12,26 @@ inputs:
 outputs:
   hdf5-dir:
     description: "Directory where HDF5 is installed"
-    value: ${{ steps.build.outputs.hdf5-dir }}
+    value: ${{ inputs.hdf5-dir }}
 runs:
   using: composite
   steps:
-    - name: Checkout
+    - name: Cache Build
+      id: cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ inputs.hdf5-dir }}
+        key: ${{ runner.os }}-cache-hdf5-${{ inputs.ref }}
+    - id: checkout
+      name: Checkout
       uses: actions/checkout@v3
+      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
       with:
         repository: 'HDFGroup/hdf5'
         ref: ${{ inputs.ref }}
         path: 'hdf5-build'
     - id: build
       name: Build HDF5
-      run: HDF5_DIR="${{ inputs.hdf5-dir }}" ./build.sh
+      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
       shell: bash
+      run: HDF5_DIR="${{ inputs.hdf5-dir }}" ./build.sh
